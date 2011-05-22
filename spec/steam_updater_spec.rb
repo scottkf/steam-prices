@@ -9,7 +9,7 @@ describe SteamPrices::Updater do
 
     it "should be able to scrape steam and give a bunch of prices" do
       URI.should_receive(:encode).exactly(5).times.and_return(File.dirname(__FILE__) + '/support/us.html')
-      games = SteamPrices::Game.update_all('usd')
+      games = SteamPrices::Game.update_all('usd', true)
       # the pages are set to 5 in the example, and there are 19 items on the page
       5.times do |i|
         games[i*19].price.should == 9.99

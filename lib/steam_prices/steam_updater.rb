@@ -34,7 +34,9 @@ module SteamPrices
         prices
       end
       
-      def update_all(currency = nil, app_id = nil, app_name = nil)
+      
+      # display stolen from https://github.com/spezifanta/SteamCalculator-Scripts/blob/master/getGames
+      def update_all(currency = nil, display = true)
         games = Array.new
       
         @countries = self.currency(currency) if !currency.nil?
@@ -46,6 +48,15 @@ module SteamPrices
           totalPages = (totalGames.to_i / gamesPerPage.to_i).ceil
 
           for i in 1..totalPages
+
+            if display then
+              printf "\n   Loading '#{country}', page %02d of %02d                                                \n", i, totalPages
+              printf "   Entries % 5d - % 5d of %d                                                \n", ((i - 1) * gamesPerPage.to_i + 1), (i * gamesPerPage.to_i), totalGames
+              printf "+---------+---------+---------------+--------------------------------------------\n"
+              printf "|  AppID  |  Price  |    Release    |                 Game Title                 \n"
+              printf "+---------+---------+---------------+--------------------------------------------\n"
+            end
+            
             doc.search('.search_result_row').each do |game|
               link, app_id = game.attr('href').match(/(.*store\.steampowered\.com\/app\/([\d]+)\/)/).captures
               price = game.search('.search_price').text.gsub(/[\W_]/, '').to_i
@@ -53,11 +64,14 @@ module SteamPrices
               name = game.search('h4').text
               logo = game.search('.search_capsule img').attr('src').value
 
+              print "|% 8s |" % app_id + "% 8.2f |" % (price / 100) + "% 14s |" % date if display
+              printf " %s%" + (43 - name[0,43].length).to_s + "s\n", name[0,42], " " if display
               games << SteamPrices::Game.new(name, app_id, link, logo, date, Money.new(price, curr))
+
 
             end
 
-            
+            printf "+---------+---------+---------------+--------------------------------------------\n\n" if display
             #grab the next page only if we're not on the last page
             doc = Nokogiri::HTML(open(URI.encode("http://store.steampowered.com/search/results?sort_by=Name&sort_order=ASC&category1=998&cc=#{country}&v6=1&page=#{i+1}"))) if i != totalPages
 
