@@ -45,16 +45,24 @@ module SteamPrices
 
           totalPages = (totalGames.to_i / gamesPerPage.to_i).ceil
 
-          doc.search('.search_result_row').each do |game|
-            link, app_id = game.attr('href').match(/(.*store\.steampowered\.com\/app\/([\d]+)\/)/).captures
-            price = game.search('.search_price').text.gsub(/[\W_]/, '').to_i
-            date = game.search('.search_released').text
-            name = game.search('h4').text
-            logo = game.search('.search_capsule img').attr('src').value
+          for i in 1..totalPages
+            doc.search('.search_result_row').each do |game|
+              link, app_id = game.attr('href').match(/(.*store\.steampowered\.com\/app\/([\d]+)\/)/).captures
+              price = game.search('.search_price').text.gsub(/[\W_]/, '').to_i
+              date = game.search('.search_released').text
+              name = game.search('h4').text
+              logo = game.search('.search_capsule img').attr('src').value
 
-            games << SteamPrices::Game.new(name, app_id, link, logo, date, Money.new(price, curr))
+              games << SteamPrices::Game.new(name, app_id, link, logo, date, Money.new(price, curr))
+
+            end
+
+            
+            #grab the next page only if we're not on the last page
+            doc = Nokogiri::HTML(open(URI.encode("http://store.steampowered.com/search/results?sort_by=Name&sort_order=ASC&category1=998&cc=#{country}&v6=1&page=#{i+1}"))) if i != totalPages
 
           end
+          
         end
         games      
       end
