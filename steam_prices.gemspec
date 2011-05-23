@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
-require "steam/version"
+require "steam_prices/version"
 
 Gem::Specification.new do |s|
-  s.name     = "steamprices"
+  s.name     = "steam-prices"
   s.version  = SteamPrices::VERSION
   s.platform = Gem::Platform::RUBY
   s.authors  = ["scott tesoriere"]
