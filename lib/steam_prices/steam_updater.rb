@@ -63,7 +63,7 @@ module SteamPrices
                 games << nil
               else
                 link, app_id = url.captures
-                price = game.search('.search_price').text.gsub(/[\W_]/, '').to_i
+                price = game.search('.search_price').text.gsub(/[\W_]/, '').to_f
                 date = game.search('.search_released').text
                 name = game.search('h4').text
                 logo = game.search('.search_capsule img').attr('src').value
