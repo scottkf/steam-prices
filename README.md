@@ -1,5 +1,9 @@
 ## changelog
 
+**v0.1.3** 
+
+- fixed problem when dealing with sale prices
+
 **v0.1.2**
 
 - floating point error

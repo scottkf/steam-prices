@@ -63,14 +63,16 @@ module SteamPrices
                 games << nil
               else
                 link, app_id = url.captures
+                #remove retail price and put sale price
+                game.search('.search_price').search('span').remove
                 price = game.search('.search_price').text.gsub(/[\W_]/, '').to_f
                 date = game.search('.search_released').text
                 name = game.search('h4').text
                 logo = game.search('.search_capsule img').attr('src').value
 
-                print "|% 8s |" % app_id + "% 8.2f |" % (price / 100) + "% 14s |" % date if display
+                print "|% 8s |" % app_id + "% 8.2f |" % (price.to_f / 100) + "% 14s |" % date if display
                 printf " %s%" + (43 - name[0,43].length).to_s + "s\n", name[0,42], " " if display
-                games << SteamPrices::Game.new(name, app_id, link, logo, date, Money.new(price, curr))
+                games << SteamPrices::Game.new(name, app_id, link, logo, date, Money.new(price.to_f, curr))
               end
             end
 
