@@ -28,7 +28,9 @@ module SteamPrices
             def regex node_set, regex
               node_set.find_all { |node| node['href'] =~ /#{regex}/ }
             end
-          }.new).search('.search_price').text.gsub(/[\W_]/, '').to_i
+          }.new).search('.search_price')
+          price = price.search('span').remove
+          price = price.text.gsub(/[\W_]/, '').to_i
           prices[curr] = Money.new(price, curr)
         end
         prices
