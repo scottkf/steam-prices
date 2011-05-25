@@ -14,7 +14,7 @@ describe SteamPrices::Updater do
     end
 
     it "should be able to scrape steam and give a bunch of prices for a pack" do
-      games = SteamPrices::Game.update_all_packs('usd', true)
+      games = SteamPrices::Game.update_all_packs('usd', false)
       games.size.should == 25
       games[6433]['usd'][:game].price.should == 39.99
     end
@@ -44,7 +44,7 @@ describe SteamPrices::Updater do
     before(:each) do
       # it says there are 5 pages
       URI.should_receive(:encode).exactly(5).times.and_return(File.dirname(__FILE__) + '/support/us.html')
-      @games = SteamPrices::Game.update_all_games('usd', true)
+      @games = SteamPrices::Game.update_all_games('usd', false)
     end
 
     it "should be able to scrape steam and give a bunch of prices" do
@@ -83,7 +83,7 @@ describe SteamPrices::Updater do
   
   
   
-  context "a single price" do
+  context "a single price", :single => true do
     before(:each) do
       URI.should_receive(:encode).and_return(File.dirname(__FILE__) + '/support/us.html')
     end
@@ -96,6 +96,12 @@ describe SteamPrices::Updater do
       p[:status].should == :ok
     end
 
+
+    it "should be able to deal with a game like retribution where it redirects to an id", :ret => true do
+      g = SteamPrices::Game.new('Warhammer® 40,000®: Dawn of War® II – Retribution™', 56400)
+      p = g.update('usd')['usd']
+      p[:price].should == 29.99
+    end
 
     it "should be able to return not found if it wasn't ok" do
       g = SteamPrices::Game.new('Warhammer 40,000: Space Marine', 55150)
