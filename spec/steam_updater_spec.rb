@@ -5,35 +5,109 @@ describe SteamPrices::Updater do
   before(:each) do
     URI.stub!(:encode)
   end
-  context "all prices" do
+  
+  
+  context "packs", :packs => true do
+    before(:each) do
+      # it says there are 5 pages
+      URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/packs.html')
+    end
 
-    it "should be able to scrape steam and give a bunch of prices" do
-      URI.should_receive(:encode).exactly(5).times.and_return(File.dirname(__FILE__) + '/support/us.html')
-      games = SteamPrices::Game.update_all('usd', true)
-      # the pages are set to 5 in the example, and there are 19 items on the page
-      5.times do |i|
-        games[i*19].price.should == 9.99
-      end
-      games.size.should == 95
-    end  
+    it "should be able to scrape steam and give a bunch of prices for a pack" do
+      games = SteamPrices::Game.update_all_packs('usd', true)
+      games.size.should == 25
+      games[6433]['usd'][:game].price.should == 39.99
+    end
+    
+    it "should be able to find a single pack" do
+      g = SteamPrices::Game.new('1C Action Collection', 6433, 'http://store.steampowered.com/sub/6433/?snr=1_7_7_230_150_1')
+      g.update('usd')['usd'][:price].should == 39.99
+    end
+  end
+  
+  it "should be able to update EVERYTHING" do
     
   end
+  
+  context "all prices" do
+
+    before(:each) do
+      # it says there are 5 pages
+      URI.should_receive(:encode).exactly(5).times.and_return(File.dirname(__FILE__) + '/support/us.html')
+      @games = SteamPrices::Game.update_all_games('usd', true)
+    end
+
+    it "should be able to scrape steam and give a bunch of prices" do
+      @games.size.should == 19
+    end  
+  
+  
+    context "exceptions" do
+      it "should be able to handle games like lost coast, which are part of a pack only and list the pack price" do
+        @games[340]['usd'][:game].price.should == 0.00
+      end
+      
+      it "should be able to handle games like warhammer retribution where it points to a different app id" do
+        @games[56400]['usd'][:game].price.should == 29.99
+      end
+      
+      it "should have an ok status if the price is ok" do
+        @games[22350]['usd'][:game].price.should == 49.99
+        @games[22350]['usd'][:status].should == :ok
+      end
+      
+      it "should have a not found status if the price is empty but the url is found (preorder)" do
+        @games[55150]['usd'][:game].price.should == nil
+        @games[55150]['usd'][:status].should == :not_found
+      end
+
+
+      it "should have a bad request status if the url is invalid or some other crazy error" do
+        @games['http://store.steampowered.com/sale/magic2011?snr=1_7_7_230_150_27'][:status].should == :bad_request
+      end
+
+    end
+  
+    
+  end
+  
+  
   
   context "a single price" do
     before(:each) do
       URI.should_receive(:encode).and_return(File.dirname(__FILE__) + '/support/us.html')
+    end
 
+
+    it "should be able to return a status if it was ok" do
+      g = SteamPrices::Game.new('brink', 22350)
+      p = g.update('usd')['usd']
+      p[:price].should == 49.99      
+      p[:status].should == :ok
+    end
+
+
+    it "should be able to return not found if it wasn't ok" do
+      g = SteamPrices::Game.new('Warhammer 40,000: Space Marine', 55150)
+      p = g.update('usd')['usd']
+      p[:price].should == nil 
+      p[:status].should == :not_found
+    end
+
+    it "should be able to get confused if something went crazy or wasn't there" do
+      g = SteamPrices::Game.new('awdwad', 21231232350)
+      g.update('usd')['usd'][:status].should == :bad_request   
     end
 
     it "should be able to find a single game and update it's price (instance)" do
       g = SteamPrices::Game.new('brink', 22350)
-      g.update('usd')['usd'].should == 49.99
+      g.update('usd')['usd'][:price].should == 49.99
 
     end
 
     it "should be able to find a single game and update it's price (class)" do
-      prices = SteamPrices::Game.update_one('brink', 22350, 'usd')
-      prices['usd'].should == 49.99
+      prices = SteamPrices::Game.update_one_game('brink', 22350, 'usd')
+      prices['usd'][:price].should == 49.99
     end    
   end
 
