@@ -67,8 +67,8 @@ module SteamPrices
       end
       
       def update_everything(currency = nil, display = true)
-        self.update_all_games(currency, display)
-        self.update_all_packs(currency, display)
+        games = self.update_all_games(currency, display)
+        games.merge!(self.update_all_packs(currency, display))
       end
       
       def update_all_games(currency = nil, display = true)
