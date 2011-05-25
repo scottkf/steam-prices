@@ -44,7 +44,7 @@ describe SteamPrices::Updater do
     before(:each) do
       # it says there are 5 pages
       URI.should_receive(:encode).exactly(5).times.and_return(File.dirname(__FILE__) + '/support/us.html')
-      @games = SteamPrices::Game.update_all_games('usd', false)
+      @games = SteamPrices::Game.update_all_games('usd', true)
     end
 
     it "should be able to scrape steam and give a bunch of prices" do
@@ -55,6 +55,7 @@ describe SteamPrices::Updater do
     context "exceptions" do
       it "should be able to handle games like lost coast, which are part of a pack only and list the pack price" do
         @games[340]['usd'][:game].price.should == 0.00
+        @games[340]['usd'][:game].price.class.name.should == "Money"
       end
       
       it "should be able to handle games like warhammer retribution where it points to a different app id" do
