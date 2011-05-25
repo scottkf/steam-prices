@@ -30,6 +30,11 @@ describe SteamPrices::Updater do
     URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/packs.html')
     games = SteamPrices::Game.update_everything('usd', false)
     games.size.should == 25+19
+    #pack
+    games[6433]['usd'][:game].price.should == 39.99
+    games[6433]['usd'][:status].should == :ok
+    games[22350]['usd'][:game].price.should == 49.99
+    games[22350]['usd'][:status].should == :ok
     
   end
   
