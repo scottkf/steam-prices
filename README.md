@@ -2,6 +2,8 @@
 
 **v0.1.7**
 
+- trailing slash removed
+- should update all prices if nil is passed
 - special exception wasn't of Money class
 
 **v0.1.6**

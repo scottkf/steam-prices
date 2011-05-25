@@ -10,7 +10,7 @@ module SteamPrices
         @app_id = app_id.to_i
         @app_name = app_name.to_s
         @store_link = store_link ||= "http://store.steampowered.com/app/12312312"
-        @category = (@store_link.match(/(.*store\.steampowered\.com\/app\/[\d]+\/)/) ? GAME : PACK)
+        @category = (@store_link.match(/(.*store\.steampowered\.com\/app\/[\d]+)/) ? GAME : PACK)
         @logo_link = logo_link
         @date_released = date_released
         raise ArgumentError, "Expected: Money()" if price.class.name != 'Money' && price != nil
