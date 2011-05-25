@@ -1,5 +1,9 @@
 ## changelog
 
+**v0.1.6**
+
+- forgot to handle a case for retribution, where it would update a single one
+
 **v0.1.5**
 
 - refactoring
