@@ -73,7 +73,7 @@ describe SteamPrices::Updater do
 
 
       it "should have a bad request status if the url is invalid or some other crazy error" do
-        @games['http://store.steampowered.com/sale/magic2011?snr=1_7_7_230_150_27'][:status].should == :bad_request
+        @games['http://store.steampowered.com/sale/magic2011?snr=1_7_7_230_150_27']['usd'][:status].should == :bad_request
       end
 
     end

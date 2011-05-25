@@ -108,7 +108,8 @@ module SteamPrices
               url = game.attr('href').match(/(.*store\.steampowered\.com\/(app|sub)\/([\d]+)\/)/)
               # for things like /sale/
               if !url then
-                games[game.attr('href')] = { :status => :bad_request }
+                games[game.attr('href')] = Hash.new if !games[game.attr('href')]
+                games[game.attr('href')][curr] = { :status => :bad_request, :game => nil}
               else
                 link, type, app_id = url.captures
                 
