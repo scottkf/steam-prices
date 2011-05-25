@@ -33,6 +33,7 @@ describe SteamPrices::Updater do
     #pack
     games[6433]['usd'][:game].price.should == 39.99
     games[6433]['usd'][:status].should == :ok
+    #game
     games[22350]['usd'][:game].price.should == 49.99
     games[22350]['usd'][:status].should == :ok
     

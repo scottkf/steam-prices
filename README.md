@@ -1,5 +1,10 @@
 ## changelog
 
+**v0.1.4**
+
+- can update packs
+- handles special exceptions, like lost coast
+
 **v0.1.3** 
 
 - fixed problem when dealing with sale prices
