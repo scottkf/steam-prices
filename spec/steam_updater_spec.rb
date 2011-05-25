@@ -25,10 +25,10 @@ describe SteamPrices::Updater do
     end
   end
   
-  it "should be able to update EVERYTHING" do
+  it "should be able to update EVERYTHING", :everything => true do
     URI.should_receive(:encode).exactly(5).times.and_return(File.dirname(__FILE__) + '/support/us.html')
     URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/packs.html')
-    games = SteamPrices::Game.update_everything
+    games = SteamPrices::Game.update_everything('usd', false)
     games.size.should == 25+19
     
   end

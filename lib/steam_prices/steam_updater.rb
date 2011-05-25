@@ -67,8 +67,8 @@ module SteamPrices
       end
       
       def update_everything(currency = nil, display = true)
-        games = self.update_all_games(currency, display)
-        games.merge!(self.update_all_packs(currency, display))
+        #combine the two hashes
+        self.update_all_games(currency, display).merge!(self.update_all_packs(currency, display))
       end
       
       def update_all_games(currency = nil, display = true)
@@ -105,12 +105,12 @@ module SteamPrices
             end
             
             doc.search('.search_result_row').each do |game|
-              url = game.attr('href').match(/(.*store\.steampowered\.com\/app|sub\/([\d]+)\/)/)
+              url = game.attr('href').match(/(.*store\.steampowered\.com\/(app|sub)\/([\d]+)\/)/)
               # for things like /sale/
               if !url then
                 games[game.attr('href')] = { :status => :bad_request }
               else
-                link, app_id = url.captures
+                link, type, app_id = url.captures
                 
                 #remove retail price and put sale price
                 price = self.get_price(game.search('.search_price'))
