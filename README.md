@@ -2,6 +2,7 @@
 
 **v0.1.7**
 
+- limited countries
 - trailing slash removed
 - should update all prices if nil is passed
 - special exception wasn't of Money class
