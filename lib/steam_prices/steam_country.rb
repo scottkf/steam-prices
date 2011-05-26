@@ -5,7 +5,8 @@ module SteamPrices
       'usd'       => 'us',
       'gbp'       => 'uk',
       'aud'       => 'au',
-      'eur'       => 'fr',
+      'eur'       => 'fr'
+    }
 
     class << self; attr_reader :currencies; end
     
