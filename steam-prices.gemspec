@@ -2,13 +2,13 @@ $LOAD_PATH << File.join(File.dirname(__FILE__), 'lib')
 require "steam_prices/version"
 
 Gem::Specification.new do |s|
-  s.name     = "steam-prices"
+  s.name     = %q{steam-prices}
   s.version  = SteamPrices::VERSION
   s.platform = Gem::Platform::RUBY
   s.authors  = ["scott tesoriere"]
-  s.email    = ["scott@tesoriere.com"]
-  s.homepage = "http://github.com/scottkf/steam_prices"
-  s.summary  = "Prices for steam."
+  s.email    = %q{scott@tesoriere.com}
+  s.homepage = %q{http://github.com/scottkf/steam_prices}
+  s.summary  = %q{Prices for steam.}
 
 
   s.files        = Dir['[A-Z]*', 'lib/**/*.rb', 'spec/**/*.rb', 'features/**/*', 'rails/**/*']
