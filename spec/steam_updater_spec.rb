@@ -25,7 +25,7 @@ describe SteamPrices::Updater do
     end
   end
   
-  it "should be able to update EVERYTHING", :everything => true do
+  it "should be able to update EVERYTHING (usd)", :everything => true do
     URI.should_receive(:encode).exactly(5).times.and_return(File.dirname(__FILE__) + '/support/us.html')
     URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/packs.html')
     games = SteamPrices::Game.update_everything('usd', false)
@@ -33,9 +33,27 @@ describe SteamPrices::Updater do
     #pack
     games[6433]['usd'][:game].price.should == 39.99
     games[6433]['usd'][:status].should == :ok
+    
+    games[15540]['usd'][:status].should == :ok
+    games[15540]['usd'][:game].price.should == 8.99
     #game
     games[22350]['usd'][:game].price.should == 49.99
     games[22350]['usd'][:status].should == :ok
+    
+  end
+  
+  it "should be able to update EVERYTHING (gbp)", :gbp => true do
+    URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/uk.html')
+    URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/packs.html')
+    games = SteamPrices::Game.update_everything('gbp', true)
+    games.size.should == 25+25
+    #pack
+    # puts games[15540]['gbp'][:game].price
+    games[15540]['gbp'][:game].price.should == 6.99
+    games[15540]['gbp'][:status].should == :ok
+    #game
+    games[12520]['gbp'][:game].price.should == 5.99
+    games[12520]['gbp'][:status].should == :ok
     
   end
   
@@ -44,7 +62,7 @@ describe SteamPrices::Updater do
     before(:each) do
       # it says there are 5 pages
       URI.should_receive(:encode).exactly(5).times.and_return(File.dirname(__FILE__) + '/support/us.html')
-      @games = SteamPrices::Game.update_all_games('usd', true)
+      @games = SteamPrices::Game.update_all_games('usd', false)
     end
 
     it "should be able to scrape steam and give a bunch of prices" do
