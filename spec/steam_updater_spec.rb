@@ -31,13 +31,13 @@ describe SteamPrices::Updater do
     games = SteamPrices::Game.update_everything('usd', false)
     games.size.should == 25+19
     #pack
-    games[6433]['usd'][:game].price.should == 39.99
+    games[6433]['usd'][:game].price.to_f.should == 39.99
     games[6433]['usd'][:status].should == :ok
     
     games[15540]['usd'][:status].should == :ok
-    games[15540]['usd'][:game].price.should == 8.99
+    games[15540]['usd'][:game].price.to_f.should == 8.99
     #game
-    games[22350]['usd'][:game].price.should == 49.99
+    games[22350]['usd'][:game].price.to_f.should == 49.99
     games[22350]['usd'][:status].should == :ok
     
   end
@@ -48,11 +48,10 @@ describe SteamPrices::Updater do
     games = SteamPrices::Game.update_everything('gbp', true)
     games.size.should == 25+25
     #pack
-    # puts games[15540]['gbp'][:game].price
-    games[15540]['gbp'][:game].price.should == 6.99
+    games[15540]['gbp'][:game].price.to_f.should == 5.99
     games[15540]['gbp'][:status].should == :ok
     #game
-    games[12520]['gbp'][:game].price.should == 5.99
+    games[12520]['gbp'][:game].price.to_f.should == 5.99
     games[12520]['gbp'][:status].should == :ok
     
   end
