@@ -13,6 +13,12 @@ describe SteamPrices::Updater do
       URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/packs.html')
     end
 
+    it "should be able to tell whether it's a pack or a game" do
+      games = SteamPrices::Game.update_all_packs('usd', false)
+      games[6433]['usd'][:type].should == SteamPrices::Updater::PACK
+    end
+
+
     it "should be able to scrape steam and give a bunch of prices for a pack" do
       games = SteamPrices::Game.update_all_packs('usd', false)
       games.size.should == 25
@@ -68,12 +74,18 @@ describe SteamPrices::Updater do
       @games.size.should == 19
     end  
   
+    it "should be able to tell whether it's a pack or a game" do
+      @games[340]['usd'][:type].should == SteamPrices::Updater::GAME
+    end
+  
+  
   
     context "exceptions" do
       it "should be able to handle games like lost coast, which are part of a pack only and list the pack price" do
         @games[340]['usd'][:game].price.should == 0.00
         @games[340]['usd'][:game].price.class.name.should == "Money"
       end
+  
       
       it "should be able to handle games like warhammer retribution where it points to a different app id" do
         @games[56400]['usd'][:game].price.should == 29.99
@@ -88,6 +100,8 @@ describe SteamPrices::Updater do
         @games[55150]['usd'][:game].price.should == nil
         @games[55150]['usd'][:status].should == :not_found
       end
+
+
 
 
       it "should have a bad request status if the url is invalid or some other crazy error" do
@@ -120,6 +134,7 @@ describe SteamPrices::Updater do
       p[:price].should == 0.00      
       p[:status].should == :ok      
     end
+
 
 
     it "should be able to deal with a game like retribution where it redirects to an id", :ret => true do
