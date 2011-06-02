@@ -1,7 +1,9 @@
 ## changelog
 
+
 **v0.1.7**
 
+- dealing with free games
 - limited countries
 - trailing slash removed
 - should update all prices if nil is passed
