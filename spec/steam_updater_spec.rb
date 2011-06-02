@@ -114,6 +114,13 @@ describe SteamPrices::Updater do
       p[:status].should == :ok
     end
 
+    it "should be able to return a price even if the price was 0" do
+      g = SteamPrices::Game.new('brink', 10650)
+      p = g.update('usd')['usd']
+      p[:price].should == 0.00      
+      p[:status].should == :ok      
+    end
+
 
     it "should be able to deal with a game like retribution where it redirects to an id", :ret => true do
       g = SteamPrices::Game.new('Warhammer® 40,000®: Dawn of War® II – Retribution™', 56400)
