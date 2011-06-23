@@ -101,7 +101,10 @@ describe SteamPrices::Updater do
         find_game(@games, 'usd', 340, 998)[:game].price.class.name.should == "Money"
       end
   
-      
+      it "should find games with a sale price" do
+        find_game(@games, 'usd', 39170, 998)[:game].price.should == 44.99
+        find_game(@games, 'usd', 39170, 998)[:game].original_price.should == 49.99        
+      end
       
       it "should have an ok status if the price is ok" do
         find_game(@games, 'usd', 22350, 998)[:game].price.should == 49.99
@@ -130,6 +133,14 @@ describe SteamPrices::Updater do
   context "a single price", :single => true do
     before(:each) do
       URI.should_receive(:encode).and_return(File.dirname(__FILE__) + '/support/us.html')
+    end
+
+
+    it "should find games with a sale price" do
+      g = SteamPrices::Game.new('somename', 39170)
+      p = g.update('usd')['usd']
+      p[:original_price].should == 49.99
+      p[:price].should == 44.99
     end
 
 

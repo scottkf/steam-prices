@@ -4,9 +4,9 @@ module SteamPrices
       include Updater
     
       attr_reader :app_id, :app_name, :store_link, :logo_link, :date_released, :status, :category
-      attr_accessor :price
+      attr_accessor :price, :original_price
     
-      def initialize(app_name = nil, app_id = nil, store_link = nil, logo_link = nil, date_released = nil, price = nil)
+      def initialize(app_name = nil, app_id = nil, store_link = nil, logo_link = nil, date_released = nil, price = nil, original_price = nil)
         @app_id = app_id.to_i
         @app_name = app_name.to_s
         @store_link = store_link ||= "http://store.steampowered.com/app/12312312"
@@ -15,6 +15,7 @@ module SteamPrices
         @date_released = date_released
         raise ArgumentError, "Expected: Money()" if price.class.name != 'Money' && price != nil
         @price = price
+        @original_price = original_price
       end
       
       def update(currency = nil)
