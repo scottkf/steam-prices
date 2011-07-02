@@ -1,5 +1,7 @@
 require 'spec_helper'
 
+puts Nokogiri::VERSION_INFO
+
 def find_game(games, currency, app_id, category = 998)
   games[app_id].each do |game|
     return game if (game[:game].price == nil || game[:game].price.currency.iso_code.upcase == currency.upcase) && game[:game].category == category
@@ -19,6 +21,15 @@ describe SteamPrices::Updater do
     before(:each) do
       # it says there are 5 pages
       URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/packs.html')
+    end
+
+
+    it "should not find any duplicates" do
+      games = SteamPrices::Game.update_all_packs('usd', false)
+      games.each do |k,v|
+        v.collect { |g| g[:game].category if g[:game].category == SteamPrices::Updater::PACK }.size.should == 1
+        v.collect { |g| g[:game].category if g[:game].category == SteamPrices::Updater::GAME }.size.should == 1
+      end
     end
 
     it "should be able to tell whether it's a pack or a game" do

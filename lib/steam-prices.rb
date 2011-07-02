@@ -1,3 +1,6 @@
+require "rubygems"
+require "bundler/setup"
+
 require 'steam_prices/steam_updater'
 require 'steam_prices/steam_country'
 require 'steam_prices/steam_game'

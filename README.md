@@ -1,5 +1,9 @@
 ## changelog
 
+**v0.1.8**
+
+- issues with nokogiri
+- saves sale prices in :original_price
 
 **v0.1.7**
 

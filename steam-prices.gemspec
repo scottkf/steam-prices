@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.test_files   = Dir['spec/**/*_spec.rb', 'features/**/*']
 
   s.add_development_dependency "rspec", ">= 2.0.0.beta.12"
-  s.add_development_dependency "nokogiri", "1.4.4"
+  s.add_development_dependency "nokogiri", "1.5.0"
   s.add_development_dependency "money"
   s.add_development_dependency "open-uri"
   
