@@ -1,8 +1,11 @@
 ## changelog
 
-**v0.1.8**
+**v0.1.9**
 
 - floating point error wouldn't grab all pages
+
+**v0.1.8**
+
 - issues with nokogiri
 - saves sale prices in :original_price
 
