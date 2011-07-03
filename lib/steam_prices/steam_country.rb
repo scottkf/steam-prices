@@ -14,7 +14,7 @@ module SteamPrices
     end
     
     def self.get_currency(country)
-      return (country.length == 2 ? @currencies.index(country) : nil)
+      return (country.length == 2 ? @currencies.key(country) : nil)
     end
 
     def self.get_country(currency)

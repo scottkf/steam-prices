@@ -1,7 +1,5 @@
 require 'spec_helper'
 
-puts Nokogiri::VERSION_INFO
-
 def find_game(games, currency, app_id, category = 998)
   games[app_id].each do |game|
     return game if (game[:game].price == nil || game[:game].price.currency.iso_code.upcase == currency.upcase) && game[:game].category == category
@@ -16,6 +14,13 @@ describe SteamPrices::Updater do
     URI.stub!(:encode)
   end
   
+  context "pagination", :page => true do
+    it "should correctly figure out and grab all the entries" do
+      URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/page1.html')      
+      URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/page2.html')      
+      games = SteamPrices::Game.update_all_packs('usd', true)
+    end
+  end
   
   context "packs", :packs => true do
     before(:each) do

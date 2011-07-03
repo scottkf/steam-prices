@@ -2,6 +2,7 @@
 
 **v0.1.8**
 
+- floating point error wouldn't grab all pages
 - issues with nokogiri
 - saves sale prices in :original_price
 
