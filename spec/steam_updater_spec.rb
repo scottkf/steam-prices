@@ -114,6 +114,7 @@ describe SteamPrices::Updater do
     context "exceptions" do
       it "should be able to handle games like lost coast, which are part of a pack only and list the pack price" do
         find_game(@games, 'usd', 340, 998)[:game].price.should == 0.00
+        find_game(@games, 'usd', 340, 998)[:game].original_price.should == 0.00
         find_game(@games, 'usd', 340, 998)[:game].price.class.name.should == "Money"
       end
   
