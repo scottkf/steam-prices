@@ -95,6 +95,22 @@ describe SteamPrices::Updater do
     find_game(games, 'gbp', 6433, 996)[:type].should == SteamPrices::Updater::PACK
   end
   
+  context "errors while updating" do
+    it "should be able to deal with http errors" do
+      # doc = Nokogiri::HTML(open(File.dirname(__FILE__) + '/support/page1.html'))
+      # doc2 = Nokogiri::HTML(open(File.dirname(__FILE__) + '/support/page2.html'))
+      URI.should_receive(:encode).ordered.exactly(1).times.and_raise(StandardError)
+      URI.should_receive(:encode).ordered.exactly(1).times.and_return(File.dirname(__FILE__) + '/support/page1.html')
+      URI.should_receive(:encode).ordered.exactly(1).times.and_return(File.dirname(__FILE__) + '/support/page2.html')
+      # Nokogiri::HTML::Document.should_receive(:parse).ordered.exactly(1).times.and_return(doc)
+      # Nokogiri::HTML::Document.should_receive(:parse).ordered.exactly(1).times.and_return(doc2)
+      @games = SteamPrices::Game.update_all_games('usd', false)
+      @games.size.should == 29
+      find_game(@games, 'usd', 3260, 998)[:game].price.should == 2.49
+      find_game(@games, 'usd', 3260, 998)[:game].original_price.should == 4.99
+    end
+  end
+  
   context "all prices" do
 
     before(:each) do
@@ -108,8 +124,7 @@ describe SteamPrices::Updater do
     end  
   
 
-  
-  
+
   
     context "exceptions" do
       it "should be able to handle games like lost coast, which are part of a pack only and list the pack price" do

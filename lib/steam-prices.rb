@@ -1,9 +1,10 @@
 require "rubygems"
 require "bundler/setup"
 
-require 'steam_prices/steam_updater'
-require 'steam_prices/steam_country'
-require 'steam_prices/steam_game'
+require 'steam-prices/updater'
+require 'steam-prices/country'
+require 'steam-prices/game'
 require 'nokogiri'
 require 'open-uri'
 require 'money'
+require 'attempt'

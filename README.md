@@ -1,5 +1,9 @@
 ## changelog
 
+**v0.2.0**
+
+- resolved connection errors, retries a few times
+
 **v0.1.9**
 
 - floating point error wouldn't grab all pages
