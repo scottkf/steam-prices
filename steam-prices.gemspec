@@ -1,5 +1,5 @@
 $LOAD_PATH << File.join(File.dirname(__FILE__), 'lib')
-require "steam_prices/version"
+require "steam-prices/version"
 
 Gem::Specification.new do |s|
   s.name     = %q{steam-prices}
