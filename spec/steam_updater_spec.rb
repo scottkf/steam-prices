@@ -14,6 +14,16 @@ describe SteamPrices::Updater do
     URI.stub!(:encode)
   end
   
+  context "weird prices with dashes on euro prices", :weird => true do
+    it "should correctly figure out the prices" do
+      URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/eur.html')      
+      games = SteamPrices::Game.update_all_games('eur', true)     
+      puts  find_game(games, 'eur', 24790, 998).inspect
+      find_game(games, 'eur', 24790, 998)[:game].price.to_f.should == 3.00
+      find_game(games, 'eur', 24790, 998)[:game].original_price.to_f.should == 14.99
+    end
+  end
+  
   context "pagination", :page => true do
     it "should correctly figure out and grab all the entries" do
       URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/page1.html')      
@@ -195,7 +205,7 @@ describe SteamPrices::Updater do
     it "should be able to return not found if it wasn't ok" do
       g = SteamPrices::Game.new('Warhammer 40,000: Space Marine', 55150)
       p = g.update('usd')['usd']
-      p[:price].should == nil 
+      p[:price].to_f.should == 0.00
       p[:status].should == :not_found
     end
 
