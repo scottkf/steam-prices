@@ -109,9 +109,9 @@ module SteamPrices
         p =   self.update_all_packs(currency, display)
         dlc = self.update_all_dlc(currency, display)
         n = Hash.new
-        g.each    {|app_id, v| v.each {|game| n[app_id] = Array.new if !n[app_id]; n[app_id] << game }}
-        p.each    {|app_id, v| v.each {|game| n[app_id] = Array.new if !n[app_id]; n[app_id] << game }}
-        dlc.each  {|app_id, v| v.each {|game| n[app_id] = Array.new if !n[app_id]; n[app_id] << game }}
+        g.each    {|app_id, v| v.each {|game| n[app_id] = Array.new if !n[app_id]; n[app_id] << game } if v}
+        p.each    {|app_id, v| v.each {|game| n[app_id] = Array.new if !n[app_id]; n[app_id] << game } if v}
+        dlc.each  {|app_id, v| v.each {|game| n[app_id] = Array.new if !n[app_id]; n[app_id] << game } if v}
         n
       end
       
