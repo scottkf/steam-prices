@@ -14,6 +14,16 @@ describe SteamPrices::Updater do
     URI.stub!(:encode)
   end
   
+  context "weird prices with dashes on euro prices", :weird => true do
+    it "should correctly figure out the prices" do
+      URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/eur.html')      
+      games = SteamPrices::Game.update_all_games('eur', true)     
+      puts  find_game(games, 'eur', 24790, 998).inspect
+      find_game(games, 'eur', 24790, 998)[:game].price.to_f.should == 3.00
+      find_game(games, 'eur', 24790, 998)[:game].original_price.to_f.should == 14.99
+    end
+  end
+  
   context "pagination", :page => true do
     it "should correctly figure out and grab all the entries" do
       URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/page1.html')      
@@ -32,14 +42,14 @@ describe SteamPrices::Updater do
     it "should not find any duplicates" do
       games = SteamPrices::Game.update_all_packs('usd', false)
       games.each do |k,v|
-        v.collect { |g| g[:game].category if g[:game].category == SteamPrices::Updater::PACK }.size.should == 1
-        v.collect { |g| g[:game].category if g[:game].category == SteamPrices::Updater::GAME }.size.should == 1
+        v.collect { |g| g[:game].category if g[:game].category == SteamPrices::Game::CATEGORIES[:pack] }.size.should == 1
+        v.collect { |g| g[:game].category if g[:game].category == SteamPrices::Game::CATEGORIES[:game] }.size.should == 1
       end
     end
 
     it "should be able to tell whether it's a pack or a game" do
       games = SteamPrices::Game.update_all_packs('usd', false)
-      find_game(games, 'usd', 6433, 996)[:type].should == SteamPrices::Updater::PACK
+      find_game(games, 'usd', 6433, 996)[:type].should == SteamPrices::Game::CATEGORIES[:pack]
     end
 
 
@@ -91,8 +101,24 @@ describe SteamPrices::Updater do
     URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/uk.html')
     URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/packs.html')
     games = SteamPrices::Game.update_everything('gbp', true)
-    find_game(games, 'gbp', 6433, 998)[:type].should == SteamPrices::Updater::GAME
-    find_game(games, 'gbp', 6433, 996)[:type].should == SteamPrices::Updater::PACK
+    find_game(games, 'gbp', 6433, 998)[:type].should == SteamPrices::Game::CATEGORIES[:game]
+    find_game(games, 'gbp', 6433, 996)[:type].should == SteamPrices::Game::CATEGORIES[:pack]
+  end
+  
+  context "errors while updating" do
+    it "should be able to deal with http errors" do
+      # doc = Nokogiri::HTML(open(File.dirname(__FILE__) + '/support/page1.html'))
+      # doc2 = Nokogiri::HTML(open(File.dirname(__FILE__) + '/support/page2.html'))
+      URI.should_receive(:encode).ordered.exactly(1).times.and_raise(StandardError)
+      URI.should_receive(:encode).ordered.exactly(1).times.and_return(File.dirname(__FILE__) + '/support/page1.html')
+      URI.should_receive(:encode).ordered.exactly(1).times.and_return(File.dirname(__FILE__) + '/support/page2.html')
+      # Nokogiri::HTML::Document.should_receive(:parse).ordered.exactly(1).times.and_return(doc)
+      # Nokogiri::HTML::Document.should_receive(:parse).ordered.exactly(1).times.and_return(doc2)
+      @games = SteamPrices::Game.update_all_games('usd', false)
+      @games.size.should == 29
+      find_game(@games, 'usd', 3260, 998)[:game].price.should == 2.49
+      find_game(@games, 'usd', 3260, 998)[:game].original_price.should == 4.99
+    end
   end
   
   context "all prices" do
@@ -108,12 +134,12 @@ describe SteamPrices::Updater do
     end  
   
 
-  
-  
+
   
     context "exceptions" do
       it "should be able to handle games like lost coast, which are part of a pack only and list the pack price" do
         find_game(@games, 'usd', 340, 998)[:game].price.should == 0.00
+        find_game(@games, 'usd', 340, 998)[:game].app_id.should == 340
         find_game(@games, 'usd', 340, 998)[:game].original_price.should == 0.00
         find_game(@games, 'usd', 340, 998)[:game].price.class.name.should == "Money"
       end
@@ -180,7 +206,7 @@ describe SteamPrices::Updater do
     it "should be able to return not found if it wasn't ok" do
       g = SteamPrices::Game.new('Warhammer 40,000: Space Marine', 55150)
       p = g.update('usd')['usd']
-      p[:price].should == nil 
+      p[:price].to_f.should == 0.00
       p[:status].should == :not_found
     end
 
