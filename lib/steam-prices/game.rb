@@ -3,8 +3,8 @@ module SteamPrices
     
       include Updater
     
-      attr_reader :app_id, :app_name, :store_link, :logo_link, :date_released, :status, :category
-      attr_accessor :price, :original_price
+      attr_reader :app_id, :app_name, :store_link, :logo_link, :date_released, :status
+      attr_accessor :price, :original_price, :category
     
       def initialize(app_name = nil, app_id = nil, store_link = nil, logo_link = nil, date_released = nil, price = nil, original_price = nil)
         @app_id = app_id.to_i

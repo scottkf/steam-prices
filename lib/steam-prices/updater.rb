@@ -177,7 +177,7 @@ module SteamPrices
                 printf " %s%" + (43 - name[0,43].length).to_s + "s\n", name[0,42], " " if display
                 status = self.status(price)
                 game = SteamPrices::Game.new(name, app_id, link, logo, date, (status == :ok ? Money.new(price, curr) : nil), (!original_price.nil? ? Money.new(original_price, curr) : nil))
-                
+                game.category = category
                 games[app_id.to_i] = Array.new if !games[app_id.to_i]
                 games[app_id.to_i] << { :game => game, :status => status, :type => category }
               end

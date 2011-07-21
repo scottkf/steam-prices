@@ -2,7 +2,7 @@
 
 **v0.2.2**
 
-- added support for DLC
+- added support to update DLC
 
 **v0.2.1**
 

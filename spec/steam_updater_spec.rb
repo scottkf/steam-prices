@@ -36,6 +36,11 @@ describe SteamPrices::Updater do
       URI.should_receive(:encode).exactly(2).times.and_return(File.dirname(__FILE__) + '/support/dlc.html')
       dlc = SteamPrices::Game.update_all_dlc('usd', false)
       find_game(dlc, 'usd', 56538, 21)[:game].price.to_f.should == 7.49
+      find_game(dlc, 'usd', 56538, 21)[:game].category.should == SteamPrices::Game::CATEGORIES[:dlc]
+      # 57656
+      find_game(dlc, 'usd', 57656, 21)[:game].price.to_f.should == 2.99
+      find_game(dlc, 'usd', 57656, 21)[:game].category.should == SteamPrices::Game::CATEGORIES[:dlc]
+
     end
   end
   
