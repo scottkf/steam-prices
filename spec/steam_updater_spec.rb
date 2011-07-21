@@ -2,7 +2,7 @@ require 'spec_helper'
 
 def find_game(games, currency, app_id, category = 998)
   games[app_id].each do |game|
-    return game if (game[:game].price == nil || game[:game].price.currency.iso_code.upcase == currency.upcase) && game[:game].category == category
+    return game if (game[:game].price == nil || game[:game].price.currency.iso_code.upcase == currency.upcase) && game[:type].to_i == category.to_i
   end
   return nil
   
@@ -28,6 +28,14 @@ describe SteamPrices::Updater do
       URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/page1.html')      
       URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/page2.html')      
       games = SteamPrices::Game.update_all_packs('usd', true)
+    end
+  end
+  
+  context "DLC", :dlc => true do
+    it "should be able to update dlc" do
+      URI.should_receive(:encode).exactly(2).times.and_return(File.dirname(__FILE__) + '/support/dlc.html')
+      dlc = SteamPrices::Game.update_all_dlc('usd', false)
+      find_game(dlc, 'usd', 56538, 21)[:game].price.to_f.should == 7.49
     end
   end
   
@@ -67,11 +75,17 @@ describe SteamPrices::Updater do
   it "should be able to update EVERYTHING (usd)", :everything => true do
     URI.should_receive(:encode).exactly(5).times.and_return(File.dirname(__FILE__) + '/support/us.html')
     URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/packs.html')
+    URI.should_receive(:encode).exactly(2).times.and_return(File.dirname(__FILE__) + '/support/dlc.html')
     games = SteamPrices::Game.update_everything('usd', false)
-    games.size.should == 25+18
+    # 25 games, 18 valid packs, 24 dlc items
+    games.size.should == 25+18+24
     #pack
     find_game(games, 'usd', 6433, 996)[:game].price.to_f.should == 39.99
     find_game(games, 'usd', 6433, 996)[:status].should == :ok
+
+    find_game(games, 'usd', 6433, 998)[:game].price.to_f.should == 3.99
+    find_game(games, 'usd', 6433, 998)[:status].should == :ok
+
     
     find_game(games, 'usd', 15540, 998)[:game].price.to_f.should == 8.99
     find_game(games, 'usd', 15540, 998)[:status].should == :ok
@@ -84,9 +98,10 @@ describe SteamPrices::Updater do
   it "should be able to update EVERYTHING (gbp)", :gbp => true do
     URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/uk.html')
     URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/packs.html')
+    URI.should_receive(:encode).exactly(2).times.and_return(File.dirname(__FILE__) + '/support/dlc.html')
     games = SteamPrices::Game.update_everything('gbp', true)
     # because thisis the total of theapp ids
-    games.size.should == 25+25-1
+    games.size.should == 25+25-1+24
     #pack
     find_game(games, 'gbp', 15540, 998)[:game].price.to_f.should == 5.99
     find_game(games, 'gbp', 15540, 998)[:status].should == :ok
@@ -99,6 +114,7 @@ describe SteamPrices::Updater do
   it "should be able to tell whether it's a pack or a game" do
     URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/uk.html')
     URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/packs.html')
+    URI.should_receive(:encode).exactly(2).times.and_return(File.dirname(__FILE__) + '/support/dlc.html')
     games = SteamPrices::Game.update_everything('gbp', true)
     find_game(games, 'gbp', 6433, 998)[:type].should == SteamPrices::Game::CATEGORIES[:game]
     find_game(games, 'gbp', 6433, 996)[:type].should == SteamPrices::Game::CATEGORIES[:pack]
