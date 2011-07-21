@@ -18,7 +18,6 @@ describe SteamPrices::Updater do
     it "should correctly figure out the prices" do
       URI.should_receive(:encode).exactly(1).times.and_return(File.dirname(__FILE__) + '/support/eur.html')      
       games = SteamPrices::Game.update_all_games('eur', true)     
-      puts  find_game(games, 'eur', 24790, 998).inspect
       find_game(games, 'eur', 24790, 998)[:game].price.to_f.should == 3.00
       find_game(games, 'eur', 24790, 998)[:game].original_price.to_f.should == 14.99
     end
@@ -103,6 +102,22 @@ describe SteamPrices::Updater do
     games = SteamPrices::Game.update_everything('gbp', true)
     find_game(games, 'gbp', 6433, 998)[:type].should == SteamPrices::Game::CATEGORIES[:game]
     find_game(games, 'gbp', 6433, 996)[:type].should == SteamPrices::Game::CATEGORIES[:pack]
+  end
+  
+  context "errors while updating" do
+    it "should be able to deal with http errors" do
+      # doc = Nokogiri::HTML(open(File.dirname(__FILE__) + '/support/page1.html'))
+      # doc2 = Nokogiri::HTML(open(File.dirname(__FILE__) + '/support/page2.html'))
+      URI.should_receive(:encode).ordered.exactly(1).times.and_raise(StandardError)
+      URI.should_receive(:encode).ordered.exactly(1).times.and_return(File.dirname(__FILE__) + '/support/page1.html')
+      URI.should_receive(:encode).ordered.exactly(1).times.and_return(File.dirname(__FILE__) + '/support/page2.html')
+      # Nokogiri::HTML::Document.should_receive(:parse).ordered.exactly(1).times.and_return(doc)
+      # Nokogiri::HTML::Document.should_receive(:parse).ordered.exactly(1).times.and_return(doc2)
+      @games = SteamPrices::Game.update_all_games('usd', false)
+      @games.size.should == 29
+      find_game(@games, 'usd', 3260, 998)[:game].price.should == 2.49
+      find_game(@games, 'usd', 3260, 998)[:game].original_price.should == 4.99
+    end
   end
   
   context "errors while updating" do

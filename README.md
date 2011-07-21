@@ -1,9 +1,12 @@
 ## changelog
 
+<<<<<<< HEAD
 **v0.2.1**
 
 - prices with dashes dealt with (thanks steam!)
 
+=======
+>>>>>>> b28f3b7e2437a2fce022616a024b4ca2dc3b1955
 **v0.2.0**
 
 - resolved connection errors, retries a few times

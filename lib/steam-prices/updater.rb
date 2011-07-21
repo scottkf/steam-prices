@@ -130,9 +130,9 @@ module SteamPrices
       
         @countries.each do |curr, country|
           doc = attempt(2, 2) {
-                 Nokogiri::HTML(open(URI.encode("http://store.steampowered.com/search/results?sort_by=Name&sort_order=ASC&category1=#{category}&cc=#{country}&v6=1&page=1")))
+            Nokogiri::HTML(open(URI.encode("http://store.steampowered.com/search/results?sort_by=Name&sort_order=ASC&category1=#{category}&cc=#{country}&v6=1&page=1")))
           }
-          next if !doc || !doc.search('.search_pagination_left')
+          next if !doc.search('.search_pagination_left')
           gamesPerPage, totalGames = doc.search('.search_pagination_left')[0].text.match(/showing\s\d+\s-\s(\d+)\sof\s(\d+)/m).captures
 
           totalPages = (totalGames.to_f / gamesPerPage.to_f).ceil
